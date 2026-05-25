@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar {{ tipo | capitalize }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="panel">
+    <h2>Editar {{ 'Livro' if tipo == 'livro' else 'Usuário' }}</h2>
+    
+    {% if tipo == 'livro' %}
+    <form action="/editar_livro/{{ dados.id_livro }}" method="POST">
+        <label>Título:</label>
+        <input type="text" name="titulo" value="{{ dados.titulo_livro }}" required>
+        <label>Autor:</label>
+        <input type="text" name="autor" value="{{ dados.autor_livro }}" required>
+        <label>Categoria:</label>
+        <input type="text" name="categoria" value="{{ dados.categoria_livro }}" required>
+        <label>Cópias Disponíveis:</label>
+        <input type="number" name="copias" value="{{ dados.copias_disponiveis_livro }}" required>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    {% else %}
+    <form action="/editar_usuario/{{ dados.id_usuario }}" method="POST">
+        <label>Nome:</label>
+        <input type="text" name="nome" value="{{ dados.nome_usuario }}" required>
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ dados.email_usuario }}" required>
+        <label>Telefone:</label>
+        <input type="number" name="telefone" value="{{ dados.telefone_usuario }}" required>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    {% endif %}
+
+    <a href="/" class="btn-voltar" style="color: var(--text-main); padding: 10px; border-radius: 4px;">Cancelar / Voltar</a>
+</div>
+
+</body>
+</html>

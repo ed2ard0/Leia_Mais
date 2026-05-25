@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão | Biblioteca</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <h1>Controle Central</h1>
+    <form class="search-bar" action="/" method="GET" style="display: flex; gap: 5px; margin: 0;">
+        <input type="text" name="busca" placeholder="Buscar título, autor ou categoria..." value="{{ termo_busca }}">
+        <button type="submit">Buscar</button>
+    </form>
+</div>
+
+<div class="alerts">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="dashboard-grid">
+    <div class="panel">
+        <h2>Cadastros</h2>
+        <form action="/cadastrar_livro" method="POST">
+            <input type="text" name="titulo" placeholder="Título do Livro" required>
+            <input type="text" name="autor" placeholder="Autor" required>
+            <input type="text" name="categoria" placeholder="Categoria (ex: Tecnologia, Ficção)" required>
+            <input type="number" name="copias" placeholder="Cópias Disponíveis" required>
+            <button type="submit">Salvar Livro</button>
+        </form>
+        <hr style="border-color: #333; margin: 20px 0;">
+        <form action="/cadastrar_usuario" method="POST">
+            <input type="text" name="nome" placeholder="Nome do Usuário" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="number" name="telefone" placeholder="Telefone" required>
+            <button type="submit">Salvar Usuário</button>
+        </form>
+    </div>
+
+    <div class="panel" style="grid-column: span 2;">
+        <h2>Acervo de Livros</h2>
+        <div style="overflow-x: auto; margin-bottom: 30px;">
+            <table>
+                <tr>
+                    <th>ID</th><th>Título</th><th>Autor</th><th>Categoria</th><th>Estoque</th><th>Ações</th>
+                </tr>
+                {% for livro in livros %}
+                <tr>
+                    <td>{{ livro.id_livro }}</td>
+                    <td>{{ livro.titulo_livro }}</td>
+                    <td>{{ livro.autor_livro }}</td>
+                    <td><span class="badge">{{ livro.categoria_livro }}</span></td>
+                    <td>{{ livro.copias_disponiveis_livro }}</td>
+                    <td>
+                        <a href="/editar_livro/{{ livro.id_livro }}" class="btn-small btn-edit">Editar</a>
+                        <a href="/apagar_livro/{{ livro.id_livro }}" class="btn-small">Apagar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <h2>Base de Usuários</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <tr>
+                    <th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Ações</th>
+                </tr>
+                {% for usr in usuarios %}
+                <tr>
+                    <td>{{ usr.id_usuario }}</td>
+                    <td>{{ usr.nome_usuario }}</td>
+                    <td>{{ usr.email_usuario }}</td>
+                    <td>{{ usr.telefone_usuario }}</td>
+                    <td>
+                        <a href="/editar_usuario/{{ usr.id_usuario }}" class="btn-small btn-edit">Editar</a>
+                        <a href="/apagar_usuario/{{ usr.id_usuario }}" class="btn-small">Apagar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Gestão de Empréstimos</h2>
+        <form action="/emprestar" method="POST">
+            <input type="number" name="id_usuario" placeholder="ID do Usuário" required>
+            <input type="number" name="id_livro" placeholder="ID do Livro" required>
+            <button type="submit">Registrar Empréstimo</button>
+        </form>
+        
+        <h3 style="color: var(--text-main); font-size: 1rem; margin-top: 20px;">Empréstimos Ativos</h3>
+        <table>
+            <tr><th>Usuário</th><th>Livro</th><th>Ação</th></tr>
+            {% for emp in emprestimos %}
+            <tr>
+                <td>{{ emp.nome_usuario }}</td>
+                <td>{{ emp.titulo_livro }}</td>
+                <td><a href="/devolver/{{ emp.id_emprestimo }}/{{ emp.id_livro }}" class="btn-small btn-dev">Devolver</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="panel">
+        <h2>Relatórios Base</h2>
+        <h3 style="color: var(--text-main); font-size: 1rem;">Top 5 Mais Emprestados</h3>
+        <table>
+            <tr><th>Livro</th><th>Total</th></tr>
+            {% for top in top_livros %}
+            <tr>
+                <td>{{ top.titulo_livro }}</td>
+                <td><span class="badge">{{ top.total }}</span></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
